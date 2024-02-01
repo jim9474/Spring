@@ -7,6 +7,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.oracle.oBootBoard.command.BExecuteCommand;
 
@@ -55,6 +56,44 @@ public class BController {
 		bExecuteService.bContentCmd(model);
 		
 		return "content_view";
+	}
+	
+	@RequestMapping(value = "/modify", method = RequestMethod.POST)
+	public String modify(HttpServletRequest request, Model model) {
+		logger.info("modify start..");
+		model.addAttribute("request", request);
+		bExecuteService.bModifyCmd(model);
+		
+		return "redirect:list";
+	}
+	
+	@RequestMapping("/reply_view")
+	public String reply_view(HttpServletRequest request, Model model) {
+		System.out.println("reply_view start..");
+		
+		model.addAttribute("request", request);
+		bExecuteService.bReplyViewCmd(model);
+		return "reply_view";
+	}
+	
+	@RequestMapping(value = "/reply", method = RequestMethod.POST)
+	public String reply(HttpServletRequest request, Model model) {
+		System.out.println("reply()");
+		
+		model.addAttribute("request", request);
+		bExecuteService.bReplyCmd(model);
+		
+		return "redirect:list";
+	}
+	
+	@RequestMapping("/delete")
+	public String delete(HttpServletRequest request, Model model) {
+		System.out.println("delete()");
+		
+		model.addAttribute("request", request);
+		bExecuteService.bDeleteCmd(model);
+		
+		return "redirect:list";
 	}
 	
 

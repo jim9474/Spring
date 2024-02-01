@@ -68,17 +68,7 @@ public class JdbcDao implements BDao {
 	private void close(Connection conn, PreparedStatement pstmt, ResultSet rs) {
 		try {
 			if(rs != null) rs.close();
-		} catch(SQLException e) {
-			e.printStackTrace();
-		}
-		
-		try {
 			if(pstmt != null) pstmt.close();
-		} catch(SQLException e) {
-			e.printStackTrace();
-		}
-		
-		try {
 			if(conn != null) close(conn);
 		} catch(SQLException e) {
 			e.printStackTrace();
@@ -97,7 +87,8 @@ public class JdbcDao implements BDao {
 		// 4. bId , bGroup 같게
 		// 5.  bStep, bIndent, bDate --> 0, 0 , sysdate
 		// HW1
-		String sql = "insert into mvc_board values(mvc_board_seq.nextval,?,?,?,sysdate,?,mvc_board_seq.nextval,0,0)";
+		String sql = "insert into mvc_board values(mvc_board_seq.nextval,?,?,?,sysdate,?,mvc_board_seq.currval,0,0)";
+		System.out.println("BDao write sql-->"+sql);
 		Connection conn = null;
 		PreparedStatement pstmt = null;
 		int result = 0;
@@ -120,6 +111,7 @@ public class JdbcDao implements BDao {
 
 	@Override
 	public BDto contentView(int bId) {
+		upHit(bId);
 		BDto board = new BDto();
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -149,4 +141,149 @@ public class JdbcDao implements BDao {
 		return board;
 	}
 
+	private void upHit(int bId) {
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		String sql = "update mvc_board set bhit=bhit+1 where bid=?";
+		try {
+			conn = getConnection();
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setInt(1, bId);
+			pstmt.executeUpdate();
+		} catch(Exception e) {
+			System.out.println(e.getMessage());
+			e.printStackTrace();
+		} finally {
+			close(conn, pstmt, null);
+		}
+		
+	}
+
+	@Override
+	public void modify(int bId, String bName, String bTitle, String bContent) {
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		String sql = "update mvc_board set bname=?, btitle=?, bcontent=? where bid=?";
+		try {
+			conn = getConnection();
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, bName);
+			pstmt.setString(2, bTitle);
+			pstmt.setString(3, bContent);
+			pstmt.setInt(4, bId);
+			pstmt.executeUpdate();
+			
+		} catch(Exception e) {
+			System.out.println(e.getMessage());
+			e.printStackTrace();
+		} finally {
+			close(conn, pstmt, null);
+		}
+		
+	}
+
+	@Override
+	public BDto reply_view(int bId) {
+		BDto dto = null;
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		ResultSet rs = null;
+		String sql = "select * from mvc_board where bid=?";
+		try {
+			conn = getConnection();
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setInt(1, bId);
+			System.out.println("BDao sql->"+sql);
+			rs = pstmt.executeQuery();
+			
+				
+			if(rs.next()) {
+					int id = rs.getInt("bId");
+					String bName = rs.getString("bName");
+					String bTitle = rs.getString("bTitle");
+					String bContent = rs.getString("bContent");
+					Timestamp bDate = rs.getTimestamp("bDate");
+					int bHit = rs.getInt("bHit");
+					int bGroup = rs.getInt("bGroup");
+					int bStep = rs.getInt("bStep");
+					int bIndent = rs.getInt("bIndent");
+					dto = new BDto(id, bName, bTitle, bContent, bDate, bHit, bGroup, bStep, bIndent);
+			}
+		
+		
+		} catch(Exception e) {
+			System.out.println(e.getMessage());
+			e.printStackTrace();
+		} finally {
+			close(conn, pstmt, rs);
+		}
+		return dto;
+	}
+
+	@Override
+	public void reply(int bId, String bName, String bTitle, String bContent, int bGroup, int bStep, int bIndent) {
+		replyShape(bGroup, bStep);
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		String inSql = "insert into mvc_board values(mvc_board_seq.nextval,?,?,?,sysdate,0,?,?,?)";
+		// String sql = "update mvc_board set bstep=bstep+1 where bgroup=? and bstep>?";
+		try {
+			conn = getConnection();
+			pstmt = conn.prepareStatement(inSql);
+			pstmt.setString(1, bName);
+			pstmt.setString(2, bTitle);
+			pstmt.setString(3, bContent);
+			pstmt.setInt(4, bGroup);
+			pstmt.setInt(5, bStep+1);
+			pstmt.setInt(6, bIndent+1);
+			pstmt.executeUpdate();
+		} catch(Exception e) {
+			System.out.println(e.getMessage());
+			e.printStackTrace();
+		} finally {
+			close(conn, pstmt, null);
+		}
+		
+	}
+
+	private void replyShape(int bGroup, int bStep) {
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		
+		try {
+			conn = getConnection();
+			String sql = "update mvc_board set bstep=bstep+1"
+						+ " where bgroup=? and bstep>?";
+			pstmt= conn.prepareStatement(sql);
+			pstmt.setInt(1, bGroup);
+			pstmt.setInt(2, bStep);
+			pstmt.executeUpdate();
+		} catch(Exception e) {
+			e.printStackTrace();
+		} finally {
+			close(conn, pstmt, null);
+		}
+		
+	}
+
+	@Override
+	public void delete(int bId) {
+		Connection conn = null;
+		PreparedStatement pstmt = null;
+		
+		try {
+			conn = getConnection();
+			String sql = "delete from mvc_board where bid=?";
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setInt(1, bId);
+			pstmt.executeUpdate();
+		} catch(Exception e) {
+			System.out.println(e.getMessage());
+			e.printStackTrace();
+		} finally {
+			close(conn, pstmt, null);
+		}
+		
+	}
+	
 }
