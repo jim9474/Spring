@@ -1,5 +1,6 @@
 package com.oracle.oBootBoard.dao;
 
+import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -269,19 +270,25 @@ public class JdbcDao implements BDao {
 	@Override
 	public void delete(int bId) {
 		Connection conn = null;
-		PreparedStatement pstmt = null;
+		CallableStatement cstmt = null;
 		
 		try {
 			conn = getConnection();
-			String sql = "delete from mvc_board where bid=?";
-			pstmt = conn.prepareStatement(sql);
-			pstmt.setInt(1, bId);
-			pstmt.executeUpdate();
+			String sql = "{call DeleteMB(?)}";
+			cstmt = conn.prepareCall(sql);
+			cstmt.setInt(1, bId);
+			cstmt.execute();
 		} catch(Exception e) {
 			System.out.println(e.getMessage());
 			e.printStackTrace();
 		} finally {
-			close(conn, pstmt, null);
+			try {
+				if(cstmt != null) cstmt.close();
+				if(conn != null) conn.close();
+			} catch(SQLException e) {
+				System.out.println(e.getMessage());
+				e.printStackTrace();
+			}
 		}
 		
 	}
