@@ -36,7 +36,7 @@ public class Member {
 	@Column(name = "member_id")
 	private Long id;
 	
-	@NotEmpty
+	@NotEmpty	// null이 올 수 없다는걸 표시
 	@Column(name = "userName")
 	private String name;
 	private Long sal;
