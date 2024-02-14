@@ -30,6 +30,19 @@ spring:
       prefix: /WEB-INF/views/
       suffix: .jsp
       
+  # gmail Transfer
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: jim9474@gmail.com
+    password: njks ndph vjsb qdlm
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls.enable: true
+      
+      
 # Mybatis
 mybatis:
   config-location: classpath:configuration.xml

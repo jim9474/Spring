@@ -7,6 +7,7 @@ import org.apache.ibatis.session.SqlSession;
 import org.springframework.stereotype.Repository;
 
 import com.oracle.oBootMybatis01.model.Emp;
+import com.oracle.oBootMybatis01.model.EmpDept;
 
 import lombok.RequiredArgsConstructor;
 
@@ -68,5 +69,93 @@ public class EmpDaoImpl implements EmpDao {
 		}
 		return updateCount;
 	}
+
+	@Override
+	public List<Emp> listManager() {
+		List<Emp> empList = null;
+		System.out.println("EmpDaoImpl listManager start..");
+		try {
+			empList = session.selectList("tkSelectManager");
+		} catch(Exception e) {
+			System.out.println("EmpDaoImpl e.getMassage()->"+e.getMessage());
+		}
+		return empList;
+	}
+
+	@Override
+	public int insertEmp(Emp emp) {
+		int insertResult = 0;
+		System.out.println("EmpDaoImpl insertEmp Start..");
+		try {
+			insertResult = session.insert("insertEmp", emp);
+		} catch(Exception e) {
+			System.out.println("EmpDaoImpl e.getMassage()->"+e.getMessage());
+		}
+		return insertResult;
+	}
+
+	@Override
+	public int deleteEmp(int empno) {
+		int result = 0;
+		System.out.println("EmpDaoImpl deleteEmp Start..");
+		try {
+			result = session.delete("deleteEmp", empno);
+		} catch(Exception e) {
+			System.out.println("EmpDaoImpl e.getMassage()->"+e.getMessage());
+		}
+		return result;
+	}
+
+	@Override
+	public List<Emp> empSearchList3(Emp emp) {
+		List<Emp> empSearchList3 = null;
+		System.out.println("EmpDaoImpl empSearchList3 Start...");
+		System.out.println("EmpDaoImpl empSearchList3 emp->"+emp);
+		try {
+			// keyword 검색
+			// Naming Rule							Map ID			parameter
+			empSearchList3 = session.selectList("tkEmpSearchList3", emp);
+		} catch(Exception e) {
+			System.out.println("EmpDaoImpl listEmp Exception->"+e.getMessage());
+		}
+		return empSearchList3;
+	}
+
+	@Override
+	public int condtotalEmp(Emp emp) {
+		int totEmpCount = 0;
+		System.out.println("EmpDaoImpl Start condtotal...");
+		System.out.println("EmpDaoImpl Start emp->"+emp);
+		try {
+			totEmpCount = session.selectOne("condtotalEmp", emp);
+			System.out.println("EmpDaoImpl totalEmp totEmpCount->"+totEmpCount);
+		} catch(Exception e) {
+			System.out.println("EmpDaoImpl totalEmp Exception->"+e.getMessage());
+		}
+		return totEmpCount;
+	}
+
+	@Override
+	public List<EmpDept> listEmpDept() {
+		List<EmpDept> empDept = null;
+		System.out.println("EmpDaoImpl listEmpDept Start...");
+		try {
+			empDept = session.selectList("tkListEmpDept");
+			System.out.println("EmpDaoImpl listEmpDept empDept.size()->"+empDept.size());
+		} catch(Exception e) {
+			System.out.println("EmpDaoImpl delete Exception->"+e.getMessage());
+		}
+		return empDept;
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 
 }

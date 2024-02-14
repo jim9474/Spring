@@ -5,6 +5,18 @@
       SELECT Count(*) FROM emp
    </select>
    <select id="tkEmpListAll" parameterType="Emp" resultType="Emp">
+   	<![CDATA[
+   		select *
+   		from
+   		(
+   			select rownum rn, a.*
+   			from (select * from emp order by empno) a
+   		)
+   		where rn >= #{start}
+   		and rn <= #{end}
+   	]]>
+   </select>
+   <select id="tkEmpListAll3" parameterType="Emp" resultType="Emp">
    		select *
    		from
    		(
@@ -20,7 +32,60 @@
    </select>
    <update id="tkEmpUpdate" parameterType="emp">
    		update emp
-   		set ename=#{ename}, job=#{job}, sal=#{sal}, hiredate=#{hiredate}, comm=#{comm}, mgr=#{mgr}, deptno=#{deptno}
+   		set ename=#{ename}, job=#{job}, sal=#{sal}, hiredate=#{hiredate}, mgr=#{mgr},
+   		<if test="#{comm}!=null">comm=#{comm}, </if> deptno=#{deptno}
    		where empno=#{empno}
    </update>
+   <select id="tkSelectManager" resultType="emp">
+   		select *
+   		from emp
+   		where empno in (select mgr from emp)
+   </select>
+   <insert id="insertEmp" parameterType="emp">
+   		insert into emp
+   		values(#{empno},#{ename},#{job},#{mgr},#{hiredate},#{sal},#{comm},#{deptno})
+   </insert>
+   <delete id="deleteEmp" parameterType="int">
+   		delete from emp
+   		where empno=#{empno}
+   </delete>
+   <select id="tkEmpSearchList3" parameterType="emp" resultType="emp">
+   		select *
+   		from
+   		(
+   			select rownum rn, a.*
+   			from (select * from emp 
+   			<choose>
+   				<when test="search == 's_job'">
+   					where job like '%' || #{keyword} || '%'
+   				</when>
+   				<when test="search == 's_ename'">
+   					where ename like '%' || #{keyword} || '%'
+   				</when>
+   				<otherwise>
+   					where job like '%'
+   				</otherwise>
+   			</choose>
+   			order by empno) a
+   		)
+   		where rn between #{start} and #{end}
+   		
+   </select>
+   <select id="condtotalEmp" parameterType="emp" resultType="int">
+   		select count(*)
+   		from emp
+   		<choose>
+   			<when test="search == 's_job'">
+   				where job like '%' || #{keyword} || '%'
+   			</when>
+   			<when test="search == 's_ename'">
+   				where ename like '%' || #{keyword} || '%'
+   			</when>
+   			<otherwise>
+   				where job like '%'
+   			</otherwise>
+   		</choose>
+   </select>
+   
+   
 </mapper>
