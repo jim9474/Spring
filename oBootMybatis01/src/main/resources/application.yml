@@ -22,7 +22,7 @@ spring:
     show_sql: true
     # Operation --> create / none / update
     hibernate:
-      ddl-auto: none  # none create
+      ddl-auto: update  # none create
  
   # view Resolver
   mvc:
