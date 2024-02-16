@@ -25,4 +25,6 @@ public interface EmpDao {
 	int condtotalEmp(Emp emp);
 
 	List<EmpDept> listEmpDept();
+
+	String deptName(int deptno);
 }

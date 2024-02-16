@@ -98,8 +98,10 @@ public class EmpDaoImpl implements EmpDao {
 	public int deleteEmp(int empno) {
 		int result = 0;
 		System.out.println("EmpDaoImpl deleteEmp Start..");
+		System.out.println("EmpDaoImpl deleteEmp empno->"+empno);
 		try {
 			result = session.delete("deleteEmp", empno);
+			System.out.println("EmpDaoImpl deleteEmp result->"+result);
 		} catch(Exception e) {
 			System.out.println("EmpDaoImpl e.getMassage()->"+e.getMessage());
 		}
@@ -146,6 +148,20 @@ public class EmpDaoImpl implements EmpDao {
 			System.out.println("EmpDaoImpl delete Exception->"+e.getMessage());
 		}
 		return empDept;
+	}
+
+	@Override
+	public String deptName(int deptno) {
+		System.out.println("EmpDaoImpl deptName start...");
+		String resultStr = "";
+		try {
+			System.out.println("EmpDaoImpl deptName deptno->"+deptno);
+			resultStr = session.selectOne("tkDeptName", deptno);
+			System.out.println("EmpDaoImpl deptName resultStr->"+resultStr);
+		} catch (Exception e) {
+			System.out.println("EmpDaoImpl deptName Exception->"+e.getMessage());
+		}
+		return resultStr;
 	}
 	
 	

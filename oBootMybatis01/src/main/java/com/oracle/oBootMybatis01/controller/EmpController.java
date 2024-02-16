@@ -2,6 +2,7 @@ package com.oracle.oBootMybatis01.controller;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -11,12 +12,16 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.oracle.oBootMybatis01.model.Dept;
 import com.oracle.oBootMybatis01.model.DeptVO;
 import com.oracle.oBootMybatis01.model.Emp;
 import com.oracle.oBootMybatis01.model.EmpDept;
+import com.oracle.oBootMybatis01.model.Member1;
 import com.oracle.oBootMybatis01.service.EmpService;
 import com.oracle.oBootMybatis01.service.Paging;
 
@@ -319,6 +324,117 @@ public class EmpController {
 			
 		return "writeDeptCursor";
 	}
+	
+	// interCeptor 시작 화면
+	@RequestMapping(value = "interCeptorForm")
+	public String interCeptorForm(Model model) {
+		System.out.println("interCeptorForm Start...");
+		return "interCeptorForm";
+	}
+	
+	// 2. interCeptor Member2
+	@RequestMapping(value = "interCeptor")
+	public String interCeptor(Member1 member1, Model model) {
+		System.out.println("EmpController interCeptor Test Start");
+		System.out.println("EmpController interCeptor id->"+member1.getId());
+		// 존재 : 1 , 비존재 : 0
+		int memCnt = es.memCount(member1.getId());
+		
+		System.out.println("EmpComtroller interCeptor memCnt->"+memCnt);
+		
+		model.addAttribute("id", member1.getId());
+		model.addAttribute("memCnt", memCnt);
+		System.out.println("interCeptor Test End");
+		
+		return "interCeptor";		// User 존재하면 User 이용 조회 Page
+	}
+	
+	// SampleInterceptor 내용을 받아 처리
+	@RequestMapping(value = "doMemberWrite", method = RequestMethod.GET)
+	public String doMemberWrite(Model model, HttpServletRequest request) {
+		String ID = (String) request.getSession().getAttribute("ID");
+		System.out.println("doMemberWrite 부터 하세요");
+		model.addAttribute("id", ID);
+		return "doMemberWrite";
+	}
+	
+	// interCeptor 진행 Test
+	@RequestMapping(value = "doMemberList")
+	public String doMemberList(Model model, HttpServletRequest request) {
+		String ID = (String) request.getSession().getAttribute("ID");
+		System.out.println("doMemberList Test Start ID->"+ID);
+		Member1 member1 = null;
+		// Member1 List Get Service
+		List<Member1> listMem = es.listMem(member1);
+		model.addAttribute("ID", ID);
+		model.addAttribute("listMem", listMem);
+		return "doMemberList";	// User 존재하면 User 이용 조회 Page
+	}
+	
+	// ajaxForm Test 입력화면
+	@RequestMapping(value = "ajaxForm")
+	public String ajaxForm(Model model) {
+		System.out.println("ajaxForm Start...");
+		return "ajaxForm";
+	}
+	
+	@ResponseBody
+	@RequestMapping(value = "getDeptName")
+	public String getDeptName(Dept dept, Model model) {
+		System.out.println("empController getDeptName deptno->"+dept.getDeptno());
+		String deptName = es.deptName(dept.getDeptno());
+		System.out.println("deptName->"+deptName);
+		return deptName;
+	}
+	
+	// Ajax List Test
+	@RequestMapping(value = "listEmpAjaxForm")
+	public String listEmpAjaxForm(Model model) {
+		Emp emp = new Emp();
+		System.out.println("Ajax List Test Start...");
+		// Parameter emp --> Page만 추가 Setting
+		emp.setStart(1); 	// 시작시 1
+		emp.setEnd(10); 	// 시작시 10
+		
+		List<Emp> listEmp = es.listEmp(emp);
+		System.out.println("EmpController listEmpAjax listEmp.size()->"+listEmp.size());
+		model.addAttribute("result", "kkk");
+		model.addAttribute("listEmp", listEmp);
+		return "listEmpAjaxForm";
+	}
+	
+	@ResponseBody
+	@RequestMapping(value = "empSerializeWrite")
+	public Map<String, Object> empSerializeWrite(@RequestBody @Valid Emp emp) {
+		System.out.println("EmpController Start...");
+		System.out.println("EmpController emp->"+emp);
+		int writeResult = 1;
+		
+		// int writeResult = kkk.writeEmp(emp);
+		//String followingProStr = Integer.toString(followingPro);
+		Map<String, Object> resultMap = new HashMap<>();
+		System.out.println("EmpController empSerializeWrite writeResult->"+writeResult);
+		
+		resultMap.put("writeResult", writeResult);
+		return resultMap;
+	}
+	
+	@RequestMapping(value = "listEmpAjaxForm2")
+	public String listEmpAjaxForm2(Model model) {
+		System.out.println("listEmpAjaxForm2 Start...");
+		Emp emp = new Emp();
+		System.out.println("Ajax List Test Start");
+		// Parameter emp --> Page만 추가 Setting
+		emp.setStart(1); 	// 시작시 1
+		emp.setEnd(15);		// 시작시 15
+		List<Emp> listEmp = es.listEmp(emp);
+		model.addAttribute("listEmp", listEmp);
+		return "listEmpAjaxForm2";
+	}
+	
+	
+	
+	
 	
 	
 	
