@@ -35,8 +35,7 @@
 	function getEmpListUpdate() {
 		alert("getEmpListUpdate Run...")
 		let empList = [];
-		const inputs = document.querySelectorAll('input[name="empno"], input[name="ename"]
-													, input[name="deptno"]');
+		const inputs = document.querySelectorAll('input[name="empno"], input[name="ename"], input[name="deptno"]');
 		for(let i=0; i<inputs.length; i+=3) {
 			const empno = inputs[i+1].value;
 			const ename = inputs[i+2].value;

@@ -462,7 +462,17 @@ public class EmpController {
 		return resultMap;
 	}
 	
-	
+	@ResponseBody
+	@RequestMapping(value = "transactionInsertUpdate")
+	public String transactionInsertUpdate(Emp emp, Model model) {
+		System.out.println("EmpController transactionInsertUpdate Start...");
+		// member Insert 성공과 실패
+		int returnMember = es.transactionInsertUpdate();
+		System.out.println("EmpController transactionInsertUpdate returnMember->"+returnMember);
+		String returnMemberString = String.valueOf(returnMember);
+		
+		return returnMemberString;
+	}
 	
 	
 	

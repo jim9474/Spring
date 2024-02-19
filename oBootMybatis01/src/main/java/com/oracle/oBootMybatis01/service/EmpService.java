@@ -42,5 +42,7 @@ public interface EmpService {
 
 	String deptName(int deptno);
 
+	int transactionInsertUpdate();
+
 	
 }

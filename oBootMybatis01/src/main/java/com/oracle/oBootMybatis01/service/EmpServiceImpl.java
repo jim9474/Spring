@@ -151,6 +151,13 @@ public class EmpServiceImpl implements EmpService {
 		return ed.deptName(deptno);
 	}
 
+	@Override
+	public int transactionInsertUpdate() {
+		System.out.println("EmpServiceImpl transactionInsertUpdate Start...");
+		// return md.transactionInsertUpdate();	// transaction X
+		return md.transactionInsertUpdate3();	// transaction OK
+	}
+
 	
 
 }
